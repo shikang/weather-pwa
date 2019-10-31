@@ -1,0 +1,38 @@
+/* colours */
+:root{
+  --primary: rgb(78, 179, 247);
+  --secondary: rgb(138, 208, 248);
+  --title: rgb(255, 255, 255);
+  --footer:  rgb(138, 208, 248);
+}
+
+/* layout styles */
+nav{
+  background: var(--primary);
+  border-bottom: 10px solid var(--secondary);
+}
+nav a{
+  text-transform: uppercase;
+  color: var(--title);
+}
+nav a span{
+  font-weight: bold;
+}
+
+footer{
+  background: var(--footer);
+}
+
+.card-panel{
+  display: flex;
+  margin: 5px;
+}
+
+.forecast-details{
+  grid-area: details;
+  margin-top: 6px;
+}
+
+.forecast-desc{
+  font-weight: bold;
+}
