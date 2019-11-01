@@ -1,5 +1,7 @@
-const staticCacheName = 'site-static-v2';
-const dynamicCacheName = 'site-dynamic-v1';
+const staticCacheName = 'site-static-v3';
+const dynamicCacheName = 'site-dynamic-v2';
+const weatherCacheName = 'weather-v1';
+const weatherRequestUrl = "https://api.darksky.net/forecast/3343a0f3b0a46dab840ee06daf9c36d9/";
 const assets = [
   // html
   '/',
@@ -19,6 +21,8 @@ const assets = [
   '/img/snow.png',
   '/img/storm.png',
   '/img/sunny.png',
+  '/img/partly-cloudy-sun.png',
+  '/img/partly-cloudy-night.png',
 
   // cdn
 ];
@@ -39,7 +43,7 @@ self.addEventListener('activate', (evt) => {
     caches.keys().then((keys) => {
       //console.log(keys);
       return Promise.all(keys
-        .filter(key => key !== staticCacheName && key !== dynamicCacheName)
+        .filter(key => key !== staticCacheName && key !== dynamicCacheName && key !== weatherCacheName)
         .map(key => caches.delete(key))
       );
     })
@@ -47,17 +51,28 @@ self.addEventListener('activate', (evt) => {
 });
 
 self.addEventListener('fetch', (evt) => {
-  //console.log('fetch event', evt)
-  /*
-  evt.respondWith(
-    caches.match(evt.request).then((cacheRes) => {
-      return cacheRes || fetch(evt.request).then( fetchRes => {
-        return caches.open(dynamicCacheName).then(cache => {
-          cache.put(evt.request.url, fetchRes.clone());
-          return fetchRes;
+  
+  //console.log('weather Url', weatherRequestUrl);
+  //console.log('fetch event', evt);
+  if (evt.request.url.indexOf(weatherRequestUrl) > -1) {
+    evt.respondWith(
+      caches.open(weatherCacheName).then((cache) => {
+        return fetch(evt.request).then((response) => {
+          cache.put(evt.request.url, response.clone());
+          return response;
+        });
+      })
+    );
+  } else {
+    evt.respondWith(
+      caches.match(evt.request).then((cacheRes) => {
+        return cacheRes || fetch(evt.request).then( fetchRes => {
+          return caches.open(dynamicCacheName).then(cache => {
+            cache.put(evt.request.url, fetchRes.clone());
+            return fetchRes;
+          })
         })
       })
-    })
-  );
-  */
+    );
+  }
 });

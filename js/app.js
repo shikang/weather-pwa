@@ -1,3 +1,5 @@
+const weatherRequestUrl = "https://api.darksky.net/forecast/3343a0f3b0a46dab840ee06daf9c36d9/";
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
     .then((reg) => console.log("service worker registered", reg))
@@ -19,21 +21,37 @@ const startWeatherForecasting = () => {
 
 const queryWeatherForecast = (lat, long) => {
   const xhr = new XMLHttpRequest();
-  const url="https://api.darksky.net/forecast/3343a0f3b0a46dab840ee06daf9c36d9/" + lat + "," + long + "?exclude=hourly,flags";
-  xhr.open("GET", url, false);
-
-  xhr.send( null );
+  const url = weatherRequestUrl + lat + "," + long + "?exclude=hourly,flags";
   
-  if(xhr.status === 200) {
-    var data = JSON.parse(xhr.responseText);
+  fetch("https://cors-anywhere.herokuapp.com/"+url, {
+    method: 'GET'
+  }).then(response => {
+    return response.json();
+  }).then(data => {
     console.log(data);
     renderLocation(data.timezone);
 
     data.daily.data.forEach(item => {
-      console.log(item);
+      //console.log(item);
       renderForecast(item);
     });
-  }
+  }).catch(e => {
+    caches.match(url)
+      .then((response) => {
+        if (response) {
+          var data = response.json();
+          renderLocation(data.timezone);
+
+          data.daily.data.forEach(item => {
+            console.log(item);
+            renderForecast(item);
+          });
+        }
+      })
+      .catch(err => {
+        console.error('Error getting data from cache', err);
+      });
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {

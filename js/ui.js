@@ -66,7 +66,6 @@ const renderForecast = (data) => {
       icon = 'partly-cloudy-night';
       break;
   }
-  console.log(date);
   const html = `
     <div class="card-panel forecast white row" style="display: flex">
       <img src="/img/${icon}.png" alt="forecast thumb">
