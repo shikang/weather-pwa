@@ -18,13 +18,21 @@ const startWeatherForecasting = () => {
 }
 
 const queryWeatherForecast = (lat, long) => {
-  const Http = new XMLHttpRequest();
-  const url="https://api.darksky.net/forecast/3343a0f3b0a46dab840ee06daf9c36d9/" + lat + "," + long + "?exclude=hourly,daily,flags";
-  Http.open("GET", "https://cors-anywhere.herokuapp.com/"+url); // CORS bypass hack! T.T
-  Http.send();
+  const xhr = new XMLHttpRequest();
+  const url="https://api.darksky.net/forecast/3343a0f3b0a46dab840ee06daf9c36d9/" + lat + "," + long + "?exclude=hourly,flags";
+  xhr.open("GET", url, false);
 
-  Http.onreadystatechange = (e) => {
-    console.log(Http.responseText)
+  xhr.send( null );
+  
+  if(xhr.status === 200) {
+    var data = JSON.parse(xhr.responseText);
+    console.log(data);
+    renderLocation(data.timezone);
+
+    data.daily.data.forEach(item => {
+      console.log(item);
+      renderForecast(item);
+    });
   }
 }
 
